@@ -17,9 +17,9 @@ ceate table mvc_board(
  CREATE sequence mvc_board_seq;
 commit;
 
-서버 - context.xml에 아래 추가
+서버 - context.xml에 아래 추가  (< Resource 붙혀서)
 
- <Resource name="jdbc/Oracle11g"
+ < Resource name="jdbc/Oracle11g"
 auth="Container"
 driverClassName="oracle.jdbc.driver.OracleDriver"
 type="javax.sql.DataSource"
