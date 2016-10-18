@@ -14,79 +14,75 @@ import javax.naming.NamingException;
 import javax.naming.spi.DirStateFactory.Result;
 import javax.sql.DataSource;
 
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
+import org.springframework.jdbc.core.JdbcTemplate;
+
 import com.song.board.dto.BDto;
+import com.song.board.util.Constant;
 
 public class BDao {
 	DataSource dataSource;
+	JdbcTemplate template= null;
 
 	public BDao() {
+		template = Constant.template;
+//		아래부분은 빈에서 이미 다 설정해서 필요 없어짐.
 		try {
 			Context context = new InitialContext();
 			dataSource = (DataSource) context.lookup("java:comp/env/jdbc/Oracle11g");
 		} catch (NamingException e) {
 			e.printStackTrace();
 		}
+		
 	}
 
 	public ArrayList<BDto> list() {
-		Connection conn = null;
-		PreparedStatement pstmt = null;
-		ResultSet rSet = null;
-		// try {
-		// Class.forName("oracle.jdbc.driver.OracleDriver");
-		// System.out.println("드라이버 로딩 성공");
-		// conn
-		// =DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:xe",
-		// "springmvc" , "0000");
-		// System.out.println("커넥션 성공");
-		// } catch (ClassNotFoundException e) {
-		// e.printStackTrace();
-		// System.out.println("드라이버 로딩 실패");
-		// } catch (SQLException e) {
-		// e.printStackTrace();
-		// System.out.println("커넥션 실패");
-		// }
-
-		ArrayList<BDto> dtos = new ArrayList<BDto>();
-		try {
-			String query = "select bId, bName, bTitle, bContent, bDate, bHit, bGroup, "
-					+ "bStep, bIndent from mvc_board order by bGroup desc, bStep asc";
-			conn = dataSource.getConnection();
-			pstmt = conn.prepareStatement(query);
-			rSet = pstmt.executeQuery();
-
-			while (rSet.next()) {
-				int bId = rSet.getInt("bId");
-				String bName = rSet.getString("bName");
-				String bTitle = rSet.getString("bTitle");
-				String bContent = rSet.getString("bContent");
-				Timestamp bDate = rSet.getTimestamp("bDate");
-				int bHit = rSet.getInt("bHit");
-				int bGroup = rSet.getInt("bGroup");
-				int bStep = rSet.getInt("bStep");
-				int bIndent = rSet.getInt("bIndent");
-
-				BDto dto = new BDto(bId, bName, bTitle, bContent, bDate, bHit, bGroup, bStep, bIndent);
-				dtos.add(dto);
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
-			try {
-				if (rSet != null)
-					rSet.close();
-				if (pstmt != null)
-					pstmt.close();
-				if (conn != null)
-					conn.close();
-
-			} catch (Exception e2) {
-				e2.printStackTrace();
-			}
-
-		}
-		return dtos;
-
+		
+		String query = "select bId, bName, bTitle, bContent, bDate, bHit, bGroup, bStep, bIndent from mvc_board order by bGroup desc, bStep asc";
+		return (ArrayList<BDto>) template.query(query, new BeanPropertyRowMapper<BDto>(BDto.class));
+		
+//		Connection conn = null;
+//		PreparedStatement pstmt = null;
+//		ResultSet rSet = null;
+//
+//		ArrayList<BDto> dtos = new ArrayList<BDto>();
+//		try {
+//			String query = "select bId, bName, bTitle, bContent, bDate, bHit, bGroup, "
+//					+ "bStep, bIndent from mvc_board order by bGroup desc, bStep asc";
+//			conn = dataSource.getConnection();
+//			pstmt = conn.prepareStatement(query);
+//			rSet = pstmt.executeQuery();
+//
+//			while (rSet.next()) {
+//				int bId = rSet.getInt("bId");
+//				String bName = rSet.getString("bName");
+//				String bTitle = rSet.getString("bTitle");
+//				String bContent = rSet.getString("bContent");
+//				Timestamp bDate = rSet.getTimestamp("bDate");
+//				int bHit = rSet.getInt("bHit");
+//				int bGroup = rSet.getInt("bGroup");
+//				int bStep = rSet.getInt("bStep");
+//				int bIndent = rSet.getInt("bIndent");
+//
+//				BDto dto = new BDto(bId, bName, bTitle, bContent, bDate, bHit, bGroup, bStep, bIndent);
+//				dtos.add(dto);
+//			}
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		} finally {
+//			try {
+//				if (rSet != null)
+//					rSet.close();
+//				if (pstmt != null)
+//					pstmt.close();
+//				if (conn != null)
+//					conn.close();
+//			} catch (Exception e2) {
+//				e2.printStackTrace();
+//			}
+//
+//		}
+//		return dtos;
 	}
 
 	public void write(String bName, String bTitle, String bContent) {
