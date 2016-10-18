@@ -1,5 +1,8 @@
 # MVCBoard
 
+ProjectExBoard	jdbc템플릿 적용 전
+springMVCBoard jdbc템플릿 적용 
+
 오라클에 추가 할 쿼리
 이름:springmvc 비밀번호:0000
 
