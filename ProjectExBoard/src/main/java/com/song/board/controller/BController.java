@@ -2,6 +2,8 @@ package com.song.board.controller;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -15,11 +17,22 @@ import com.song.board.command.BModifyCommand;
 import com.song.board.command.BReplyCommand;
 import com.song.board.command.BReplyViewCommand;
 import com.song.board.command.BWriteCommand;
+import com.song.board.util.Constant;
 
 @Controller
 public class BController {
 	
-	BCommand command; //BCommand 인터페이스만 불러오면 아래의 모든 커맨드 쓸수있음.
+	BCommand command; //BCommand
+	
+	public JdbcTemplate template;
+	
+	 @Autowired
+	public void setTemplate(JdbcTemplate template) {
+		this.template = template;
+		Constant.template = this.template;
+		//template를 어디서나 쓸 수 있게 util 패키지를 만들어 템플릿을 만듬.
+	}
+	
 	
 	@RequestMapping("/list")
 	public String list(Model model){
@@ -37,7 +50,7 @@ public class BController {
 		return "write_view";
 	}
 	
-	@RequestMapping("/write") //글을 가져와야하기떄문에 request함
+	@RequestMapping("/write")
 	public String write(HttpServletRequest request, Model model){
 		System.out.println("write");
 		
@@ -45,7 +58,7 @@ public class BController {
 		command = new BWriteCommand();
 		command.execute(model);
 		
-		return "redirect:list";//작성완료후 리스트로
+		return "redirect:list";
 	}
 	
 	@RequestMapping("/content_view")
